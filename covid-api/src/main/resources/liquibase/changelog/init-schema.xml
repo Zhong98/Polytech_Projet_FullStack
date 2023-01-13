@@ -1,0 +1,33 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2023-person" author="zixiao">
+        <createTable tableName="person" remarks="Person table(Médecin,administrateur,super admin)">
+            <column name="id" type="int" remarks="Id">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="firstname" type="varchar(255)" remarks="Prénom"/>
+            <column name="lastname" type="varchar(255)" remarks="Nom"/>
+            <column name="email" type="varchar(255)" remarks="Email"/>
+            <column name="password" type="varchar(255)" remarks="Mot de passe"/>
+            <column name="role" type="int" remarks="0 est super admin; 1 est administrateur; 2 est médecin"/>
+            <column name="centerID" type="int" remarks="Pour administrateur et médecin"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2023-reservation" author="zixiao">
+        <createTable tableName="reservation" remarks="Reservation table">
+            <column name="id" type="int" remarks="Id">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="firstname" type="varchar(255)" remarks="Prénom"/>
+            <column name="lastname" type="varchar(255)" remarks="Nom"/>
+            <column name="email" type="varchar(255)" remarks="Email"/>
+            <column name="centerID" type="varchar(255)" remarks="Centre"/>
+            <column name="date" type="varchar(255)" remarks="Date"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

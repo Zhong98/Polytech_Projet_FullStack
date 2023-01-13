@@ -43,6 +43,7 @@
 
 <script setup>
 import {backOfficeMenu} from "@/store/backOfficeMenu";
+import {storeToRefs} from "pinia";
 
 const store=backOfficeMenu();
 let {pageIndex}=storeToRefs(store)

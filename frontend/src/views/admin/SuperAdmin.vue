@@ -59,6 +59,7 @@
 <script setup>
 import {ElMessage, ElMessageBox} from "element-plus";
 import {backOfficeMenu} from "@/store/backOfficeMenu.js";
+import {storeToRefs} from "pinia";
 const store=backOfficeMenu();
 let {person}=storeToRefs(store);
 const router=useRouter();

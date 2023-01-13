@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input class="centerInfo" type="text" readonly :value="center">
+    <input class="centerInfo" type="text" readonly :value="centerInfo">
   </div>
   <ul>
     <li>
@@ -70,11 +70,13 @@ import {CloseBold} from "@element-plus/icons-vue";
 import {Select} from "@element-plus/icons-vue";
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {backOfficeMenu} from "@/store/backOfficeMenu.js";
+import {storeToRefs} from "pinia";
 
 const router=useRouter();
 const store=backOfficeMenu();
 let {center,person,reservation}=storeToRefs(store);
-const centerInfo = center.name+', '+center.address+'; '+center.ZIPcode+' '+center.city;
+console.log(center.value)
+const centerInfo = center.value.name+', '+center.value.address+'; '+center.value.ZIPcode+' '+center.value.city;
 
 const doctorData = [
   {id: '1', firstname: 'Tom', lastname: 'Clancy',email:'980819213zzx@gmail.com',password:'1111111111111'},

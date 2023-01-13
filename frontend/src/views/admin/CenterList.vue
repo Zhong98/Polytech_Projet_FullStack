@@ -17,7 +17,7 @@
     <el-table-column label="Actions" width="160" align="center">
       <template #default="scope">
         <i class="iconfont icon-xiugai" @click="modifyCenter(scope.row)"></i>
-        <i class="iconfont icon-renyuan"></i>
+        <i class="iconfont icon-renyuan" @click="showCenter(scope.row)"></i>
       </template>
     </el-table-column>
   </el-table>
@@ -26,6 +26,7 @@
 <script setup>
 import Search from '@/components/common/Search.vue'
 import {backOfficeMenu} from "@/store/backOfficeMenu.js";
+import {storeToRefs} from "pinia";
 
 const store=backOfficeMenu();
 let {center}=storeToRefs(store);
@@ -40,13 +41,13 @@ const modifyCenter = (row) => {
   center.value=row;
   router.push({name:'CenterModify'})
 }
+const showCenter = (row) => {
+  center.value=row;
+  router.push({name:'MyCenter'})
+}
 
 const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  }
+  {name: 'Nancy CH', ZIPcode:'54000', city:'Nancy', address: 'No. 189, Grove St, Los Angeles'}
 ]
 </script>
 

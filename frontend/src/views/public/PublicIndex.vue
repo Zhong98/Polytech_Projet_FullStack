@@ -14,7 +14,7 @@
         <el-button type="primary" @click="toReserve(item)">Choisir</el-button>
       </li>
     </ul>
-    <el-button class="show-more" type="primary" size="large" @click="showMore">Afficher plus</el-button>
+<!--    <el-button class="show-more" type="primary" size="large" @click="showMore">Afficher plus</el-button>-->
   </div>
 </template>
 
@@ -37,9 +37,9 @@ const toReserve = (item) => {
   centerSelected.value=item;
   router.push({name:"Reserve"});
 }
-const showMore = () => {
+/*const showMore = () => {
   //搜索将所有结果搜出来放到Pinia中，showMore每次多显示2个
-}
+}*/
 </script>
 
 <style scoped lang="scss">

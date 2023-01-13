@@ -23,7 +23,7 @@
         <el-button @click="onCancel">Annuler</el-button>
       </el-form-item>
       <el-form-item>
-        <i class="iconfont icon-renyuan"></i>
+        <i class="iconfont icon-renyuan" @click="showCenter"></i>
       </el-form-item>
     </el-form>
   </div>
@@ -57,6 +57,9 @@ const onCancel = () => {
         type: 'warning',
       }
   ).then(() => {router.back();})
+}
+const showCenter = () => {
+  router.push({name:'MyCenter'})
 }
 </script>
 

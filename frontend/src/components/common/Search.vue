@@ -12,7 +12,6 @@ const props=defineProps({
   table:String
 })
 let {txt,table}=toRefs(props)
-console.log(txt.value)
 //Rechercher dans quel tableau
 console.log(table.value)
 </script>
