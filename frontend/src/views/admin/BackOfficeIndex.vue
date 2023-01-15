@@ -15,17 +15,22 @@
                   text-color="#fff"
                   @select="selectMenu"
               >
-                <el-menu-item index="1">
+                <!--                Si l'utilisateur n'est pas surper admin, item disabled-->
+                <el-menu-item index="1" :disabled="userInfo.role!=0">
                   <span>Centres</span>
                 </el-menu-item>
-                <el-menu-item index="2">
+
+                <!--                Si l'utilisateur est médecin, item disabled-->
+                <el-menu-item index="2" ::disabled="userInfo.role==2">
                   <span>Mon centre</span>
                 </el-menu-item>
-<!--                <el-menu-item index="3" disabled>-->
+
                 <el-menu-item index="3">
                   <span>Planning</span>
                 </el-menu-item>
-                <el-menu-item index="4">
+
+                <!--                Si l'utilisateur n'est pas surper admin, item disabled-->
+                <el-menu-item index="4" :disabled="userInfo.role!=0">
                   <span>Config.</span>
                 </el-menu-item>
               </el-menu>
@@ -43,10 +48,9 @@
 
 <script setup>
 import {backOfficeMenu} from "@/store/backOfficeMenu";
-import {storeToRefs} from "pinia";
 
 const store=backOfficeMenu();
-let {pageIndex}=storeToRefs(store)
+let {pageIndex,userInfo}=storeToRefs(store)
 const router=useRouter();
 const selectMenu = (index) => {
   //Savoir utilisateur cliquer quel item

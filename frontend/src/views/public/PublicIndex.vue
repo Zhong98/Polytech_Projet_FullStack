@@ -10,11 +10,11 @@
           :key="index"
           class="u-clearfix">
         <div class="u-l">{{item.name}}</div>
-        <div class="u-l">{{item.address}}, {{item.ZIPcode}} {{item.city}}</div>
+        <div class="u-l" v-if="item.address">{{item.address}}</div>
+        <div class="u-l">{{item.zipcode}} {{item.city}}</div>
         <el-button type="primary" @click="toReserve(item)">Choisir</el-button>
       </li>
     </ul>
-<!--    <el-button class="show-more" type="primary" size="large" @click="showMore">Afficher plus</el-button>-->
   </div>
 </template>
 
@@ -24,22 +24,14 @@ import {reservation} from "@/store/reserve.js";
 
 const store=reservation();
 const router=useRouter();
+let {centerSelected,centerList}=storeToRefs(store);
 
 const txt=ref('Dans quelle ville?')
 const table=ref('center')
-
-const centerList=[
-  {id:'1', name:'CH Nancy', address:'xxxxxxxxx', ZIPcode:'54000', city:'Nancy',},
-]
-
-let {centerSelected}=storeToRefs(store);
 const toReserve = (item) => {
   centerSelected.value=item;
   router.push({name:"Reserve"});
 }
-/*const showMore = () => {
-  //搜索将所有结果搜出来放到Pinia中，showMore每次多显示2个
-}*/
 </script>
 
 <style scoped lang="scss">
@@ -66,18 +58,21 @@ h1{
   display: none;
 }
 .results{
+  margin-bottom: 2vh;
   height: 60vh;
   overflow: scroll;
   li{
     position: relative;
     margin: 1vh 5vw;
+    height: 7.7vh;
     border: solid 2px black;
     border-radius: 5px;
     font-size: 22px;
+    overflow: scroll;
     div{
       margin: .5vh 0 .25vh;
       padding-left: .8vw;
-      width: 20vw;
+      width: 22vw;
       text-align: left;
     }
     .el-button{

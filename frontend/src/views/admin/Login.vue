@@ -21,19 +21,38 @@
 </template>
 
 <script setup>
+import {checkAuth} from "@/utils/checkAuth.js";
+import {backOfficeMenu} from "@/store/backOfficeMenu.js";
+import {ElMessage} from "element-plus";
+
+const router=useRouter();
+const store=backOfficeMenu();
+let {userInfo,token,center}=storeToRefs(store);
+
 const form = reactive({
   email:'',
   password:''
 })
-
 const onSubmit = () => {
-  console.log(form)
+  checkAuth(form.email,form.password).then(res=>{
+    if (res=='0'){
+      localStorage.removeItem('token');
+      ElMessage.error("Email ou mot de passe n'est pas correct.")
+    }else if (res=='Too many request'){
+      router.push({name:'Wait'});
+    } else{
+      center.value=res.center;
+      userInfo.value=res.person;
+      token.value=res.token;
+      router.push({name:'Default'});
+    }
+  })
 }
 </script>
 
 <style scoped lang="scss">
 .container{
-  background: url("background2.png") no-repeat;
+  background: url("../../../public/background2.png") no-repeat;
   background-size: cover;
 }
 .title{

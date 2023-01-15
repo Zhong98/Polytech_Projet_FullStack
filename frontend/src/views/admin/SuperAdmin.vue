@@ -44,7 +44,7 @@
         <el-table-column prop="lastname" label="Nom" width="140"/>
         <el-table-column prop="email" label="Email" width="400"/>
         <el-table-column prop="password" label="Mot de passe" width="400"/>
-        <el-table-column prop="center" label="Centre"/>
+        <el-table-column prop="centerID" label="Centre ID"/>
         <el-table-column label="Actions" width="180" align="center">
           <template #default="scope">
             <i class="iconfont icon-xiugai" @click="onModify(scope.row)"></i>
@@ -59,25 +59,39 @@
 <script setup>
 import {ElMessage, ElMessageBox} from "element-plus";
 import {backOfficeMenu} from "@/store/backOfficeMenu.js";
-import {storeToRefs} from "pinia";
+import {deletePerson} from "@/utils/people/deleteDoctor.js";
+import {getSuperAdmin} from "@/utils/people/getSuperAdmin.js";
+import {getAdmin} from "@/utils/people/getAdmin.js";
+
 const store=backOfficeMenu();
 let {person}=storeToRefs(store);
 const router=useRouter();
 
-let superAdminData = [
-  {id: '1', firstname: 'Zixiao',lastname:'Zhong',email:'980819213zzx@gmail.com',password:'111111111111111111'},
-]
-let adminData = [
-  {id: '1', firstname: 'Zixiao',lastname:'Zhong',email:'980819213zzx@gmail.com',password:'111111111111111111', center: 'Nancy CH'},
-]
-
+let superAdminData = ref([])
+let adminData = ref([])
+getSuperAdmin().then(res=>{
+  superAdminData.value=res
+})
+getAdmin().then(res=>{
+  adminData.value=res
+})
 const onAdd = () => {
   person.value={};
-  router.push({name:'PersonModify'});
+  router.push({
+    name:'PersonModify',
+    query:{
+      action:'add'
+    }
+  });
 }
 const onModify = (row) => {
   person.value=row;
-  router.push({name:'PersonModify'});
+  router.push({
+    name:'PersonModify',
+    query:{
+      action:'modify'
+    }
+  });
 }
 const onDelete = (row) => {
   ElMessageBox.confirm(
@@ -90,9 +104,13 @@ const onDelete = (row) => {
       }
   )
       .then(() => {
-        ElMessage({
-          type: 'success',
-          message: 'Suppression terminée',
+        deletePerson(row.id).then(res=>{
+          if (res==200){
+            ElMessage({
+              type: 'success',
+              message: 'Suppression terminée',
+            })
+          }
         })
       })
       .catch(() => {

@@ -7,7 +7,7 @@
         size="large"
     >
       <el-form-item label="Centre">
-        <el-input v-model="form.centerInfo" type="textarea" readonly/>
+        <el-input :value="centerInfo" type="textarea" readonly/>
       </el-form-item>
       <el-form-item label="Prénom">
         <el-input v-model="form.firstname" />
@@ -21,7 +21,7 @@
       <el-form-item label="Date">
         <el-col :span="11">
           <el-date-picker
-              v-model="form.date1"
+              v-model="form.date"
               type="date"
               placeholder="Choisir une date"
               style="width: 100%"
@@ -32,7 +32,7 @@
         </el-col>
         <el-col :span="11">
           <el-time-picker
-              v-model="form.date2"
+              v-model="form.hour"
               placeholder="Choisir une heure"
               style="width: 100%"
               format="HH:mm"
@@ -51,32 +51,48 @@
 import { ElMessageBox } from 'element-plus'
 import { SuccessFilled } from '@element-plus/icons-vue'
 import {backOfficeMenu} from "@/store/backOfficeMenu.js";
+import {updateRdv} from "@/utils/rdv/updateRdv.js";
 
 const store=backOfficeMenu();
 let {center,reservation}=store;
 const router=useRouter();
+const route=useRoute();
+const action=route.query.action;
 
+const centerInfo=center.name+', '+center.address+'; '+center.ZIPcode+' '+center.city;
 const form = reactive({
-  centerInfo: center.name+', '+center.address+'; '+center.ZIPcode+' '+center.city,
   firstname: reservation.firstname||'',
   lastname:reservation.lastname||'',
   email:reservation.email||'',
-  date1: '',
-  date2: '',
+  date: '',
+  hour: '',
 })
 
-const onSubmit = (form) => {
-  //notification
-  ElMessageBox.alert(
-      'La réservation a bien été enregistrée',
-      {
-        confirmButtonText: 'OK',
-        type: 'success',
-        icon: markRaw(SuccessFilled),
-      }
-  )
-  //Obtenir le temps
-  console.log(form.date1.getMonth()+1,form.date2.getHours(),form.date2.getMinutes())
+const onSubmit = () => {
+  let reservationSent={
+    centerID:center.id+'',
+    firstname:form.firstname,
+    lastname:form.lastname,
+    email:form.email,
+    date: form.date.getDate()+'/'+(form.date.getMonth()+1)+'/'+form.date.getFullYear(),
+    hour: form.hour.getHours()+':'+form.hour.getMinutes(),
+    status:0
+  }
+  if (action!='add'){
+    reservationSent.id=reservation.id;
+  }
+  updateRdv(reservationSent).then(res=>{
+    if (res==200){
+      ElMessageBox.alert(
+          'La réservation a bien été enregistrée',
+          {
+            confirmButtonText: 'OK',
+            type: 'success',
+            icon: markRaw(SuccessFilled),
+          }
+      )
+    }
+  })
 }
 const onCancel = () => {
   ElMessageBox.confirm(

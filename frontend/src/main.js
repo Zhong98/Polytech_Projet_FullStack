@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
 import router from "./router/index.js";
-import {createPinia} from "pinia";
+import store from "@/store/index.js";
 import Axios from 'axios';
 
 import "@/assets/css/iconfont.css";
@@ -19,4 +19,4 @@ app.use(router).mount('#app')
 app.use(ElementPlus, {
     locale: fr,
 })
-app.use(createPinia())
+app.use(store)

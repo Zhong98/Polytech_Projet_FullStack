@@ -2,12 +2,22 @@ import { defineStore } from 'pinia'
 export const backOfficeMenu = defineStore('backOfficeMenu', {
     state: () => {
         return {
-            pageIndex:'', //菜单选择时更新
-            role:'', //后台登录时确定 medecin||administrateur||super admin
-            center:{},//后台登录时更新,以及super admin在center页面点击人员时更新
-            person:{},//人员更改时更新
-            reservation:{}, //修改rdv时更新
+            pageIndex:'', //Le item selected in backoffice menu
+            center:{},//Mettre à jour lors de la connexion en arrière-plan et mettre à jour lorsque le super administrateur clique sur l'icône de la personne sur la page centrale
+            person:{},//Mettre à jour lorsque modifier personne
+            reservation:{}, //mise à jour lorsque rdv est modifié
+            tableData:[],//Toutes les centres
+            patientData:[],//Médecin recherche le patient dans la page planning
+            userInfo:{}, //Utilisateur
+            token:''
         }
     },
-    getters: {},
+    //Enregistre des données dans LocalStorage
+    persist: {
+        enabled: true,
+        strategies: [{
+            storage: localStorage,
+            paths: ['center', 'person','reservation','userInfo','token']
+        }]
+    }
 })

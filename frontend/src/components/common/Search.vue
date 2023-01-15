@@ -1,19 +1,45 @@
 <template>
   <div class="search">
-    <input type="text" :placeholder="txt">
-    <i class="iconfont icon-sousuo"></i>
+    <input type="text" :placeholder="txt" @keydown.enter="search" v-model="inputInfo">
+    <i class="iconfont icon-sousuo" @click="search"></i>
   </div>
 </template>
 
 <script setup>
-import { toRefs } from 'vue'
+import {getCenterList} from "@/utils/center/getCenterList.js";
+import {reservation} from "@/store/reserve.js";
+import {backOfficeMenu} from "@/store/backOfficeMenu.js";
+import {getPatient} from "@/utils/rdv/getPatient.js";
+
+const store=reservation();
+let {centerList}=storeToRefs(store)
+
+const backOffice=backOfficeMenu();
+let {tableData,center,patientData}=storeToRefs(backOffice);
+
 const props=defineProps({
   txt:String,
-  table:String
+  table:String,
+  date:{
+    required:false
+  }
 })
-let {txt,table}=toRefs(props)
-//Rechercher dans quel tableau
-console.log(table.value)
+let inputInfo=ref('');
+let {txt,table,date}=toRefs(props)
+
+const search = () => {
+  console.log(table.value)
+  if (table.value==='center'){
+    getCenterList(inputInfo.value).then(res=>{
+      centerList.value=res;
+      tableData.value=res;
+    })
+  }else {
+    getPatient(date.value,center.value.id,inputInfo.value).then(res=>{
+      patientData.value=res;
+    })
+  }
+}
 </script>
 
 <style scoped lang="scss">

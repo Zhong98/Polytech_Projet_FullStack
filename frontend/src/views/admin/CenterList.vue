@@ -8,10 +8,11 @@
       size="large"
       border
       stripe
+      lazy
   >
-    <el-table-column type="index" width="90"/>
-    <el-table-column prop="name" label="Nom" width="300" />
-    <el-table-column prop="ZIPcode" label="Code Postal" width="180" />
+    <el-table-column prop="id" label="ID" width="90"/>
+    <el-table-column prop="name" label="Nom" width="520" />
+    <el-table-column prop="zipcode" label="Code Postal" width="180" />
     <el-table-column prop="city" label="Ville" width="240" />
     <el-table-column prop="address" label="Adresse" />
     <el-table-column label="Actions" width="160" align="center">
@@ -26,29 +27,41 @@
 <script setup>
 import Search from '@/components/common/Search.vue'
 import {backOfficeMenu} from "@/store/backOfficeMenu.js";
-import {storeToRefs} from "pinia";
+import {getCenterList} from "@/utils/center/getCenterList.js";
 
 const store=backOfficeMenu();
-let {center}=storeToRefs(store);
+let {center,tableData}=storeToRefs(store);
 const router=useRouter();
-const txt=ref('Filtrer')
-const table=ref('center')
+const txt=ref('Filtrer');
+const table=ref('center');
+
+getCenterList().then(res=>{
+  console.log(res)
+  tableData.value=res;
+})
+
 const addCenter = () => {
   center.value={};
-  router.push({name:'CenterModify'})
+  router.push({
+    name:'CenterModify',
+    query:{
+      action:'add' //Savoir l'action, ajouter ou modifier
+    }
+  })
 }
 const modifyCenter = (row) => {
   center.value=row;
-  router.push({name:'CenterModify'})
+  router.push({
+    name:'CenterModify',
+    query:{
+      action:'modify'
+    }
+  })
 }
 const showCenter = (row) => {
   center.value=row;
   router.push({name:'MyCenter'})
 }
-
-const tableData = [
-  {name: 'Nancy CH', ZIPcode:'54000', city:'Nancy', address: 'No. 189, Grove St, Los Angeles'}
-]
 </script>
 
 <style scoped lang="scss">

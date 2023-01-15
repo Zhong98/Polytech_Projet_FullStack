@@ -3,33 +3,31 @@
     <el-form :model="form" label-width="120px" label-position="top" size="large">
       <el-form-item label="Prénom et Nom">
         <el-col :span="11">
-          <el-input v-model="form.firstName" placeholder="Prénom"/>
+          <el-input v-model="form.firstname" placeholder="Prénom"/>
         </el-col>
         <el-col :span="2" class="text-center">
           <span class="text-gray-500">-</span>
         </el-col>
         <el-col :span="11">
-          <el-input v-model="form.lastName" placeholder="Nom"/>
+          <el-input v-model="form.lastname" placeholder="Nom"/>
         </el-col>
       </el-form-item>
       <el-form-item label="Email">
-        <el-input v-model="form.email" />
+        <el-input v-model="form.email"/>
       </el-form-item>
       <el-form-item label="Mot de passe">
-        <el-input v-model="form.password" />
+        <el-input v-model="form.password"/>
       </el-form-item>
       <el-form-item label="Role">
         <el-select v-model="form.role" placeholder="Merci de sectionner le role">
-          <el-option v-if="!isDisable" label="Médecin" value="0" />
+          <el-option v-if="isDisable" label="Super Admin" value="0"/>
           <el-option v-if="isDisable" label="Administrateur" value="1"/>
-          <el-option v-if="isDisable" label="Super Admin" value="2"/>
+          <el-option label="Médecin" value="2"/>
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Centre de rattachement">
-        <el-select v-model="form.center" placeholder="Merci de sectionner la centre" :disabled="!isDisable">
-          <el-option v-for="(item,index) in centerList" :label="item" :value="index" />
-        </el-select>
+      <el-form-item label="Centre de rattachement (Centre ID)">
+        <el-input v-model="form.centerID" :disabled="!isDisable"/>
       </el-form-item>
 
       <el-form-item>
@@ -41,22 +39,25 @@
 </template>
 
 <script setup>
-import { ElMessage, ElMessageBox } from 'element-plus'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import {backOfficeMenu} from "@/store/backOfficeMenu";
+import {updatePerson} from "@/utils/people/updatePerson.js";
 
-const router=useRouter();
-const store=backOfficeMenu();
-let {pageIndex,person}= store;
-let isDisable=pageIndex=='4' //Juste Super Admin peut choisir administrateur et super admin, pour Centre de rattachement aussi
+const router = useRouter();
+const route = useRoute();
+const action = route.query.action;
 
-const centerList=['Nancy','Metz','Paris']
+const store = backOfficeMenu();
+let {pageIndex, person, center} = store;
+let isDisable = pageIndex == '4' //Juste Super Admin peut choisir administrateur et super admin, pour Centre de rattachement aussi
 
 const form = reactive({
-  firstName:person.firstname||'',
-  lastName:person.lastname||'',
-  email:person.email||'',
-  password:person.password||'',
-  center:''
+  firstname: person.firstname || '',
+  lastname: person.lastname || '',
+  email: person.email || '',
+  password: person.password || '',
+  role: '',
+  centerID: center.id || ''
 })
 
 const onCancel = () => {
@@ -85,9 +86,18 @@ const onSave = () => {
       }
   )
       .then(() => {
-        ElMessage({
-          type: 'success',
-          message: 'Sauvegarde terminée',
+        console.log(action);
+        if (action!='add'){
+          form.id=person.id;
+        }
+        console.log(form);
+        updatePerson(form).then(res => {
+          if (res == 200) {
+            ElMessage({
+              type: 'success',
+              message: 'Sauvegarde terminée',
+            })
+          }
         })
       })
       .catch(() => {
@@ -101,16 +111,19 @@ const onSave = () => {
 
 
 <style scoped lang="scss">
-.g-container{
+.g-container {
   padding: 2vw;
 }
-.el-form-item--large{
+
+.el-form-item--large {
   --font-size: 20px;
 }
-.el-input--large{
+
+.el-input--large {
   font-size: 20px;
 }
-.el-button{
+
+.el-button {
   font-size: 20px;
 }
 </style>

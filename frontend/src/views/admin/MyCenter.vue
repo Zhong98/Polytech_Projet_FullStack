@@ -17,8 +17,8 @@
           size="large"
       >
         <el-table-column prop="id" label="ID" width="120"/>
-        <el-table-column prop="firstname" label="Prénom" width="110"/>
-        <el-table-column prop="lastname" label="Nom" width="110"/>
+        <el-table-column prop="firstname" label="Prénom" width="160"/>
+        <el-table-column prop="lastname" label="Nom" width="160"/>
         <el-table-column prop="email" label="Email" width="360"/>
         <el-table-column prop="password" label="Mot de passe"/>
         <el-table-column label="Actions" width="180" align="center">
@@ -43,14 +43,14 @@
           size="large"
       >
         <el-table-column prop="id" label="ID" width="120"/>
-        <el-table-column prop="firstname" label="Prénom" width="110"/>
-        <el-table-column prop="lastname" label="Nom" width="110"/>
+        <el-table-column prop="firstname" label="Prénom" width="160"/>
+        <el-table-column prop="lastname" label="Nom" width="160"/>
         <el-table-column prop="date" label="Date" width="180"/>
         <el-table-column prop="hour" label="Heure" width="140"/>
         <el-table-column prop="email" label="Email"/>
         <el-table-column label="Validé" width="160" align="center">
           <template #default="scope">
-            <el-icon v-if="scope.row.sta=='1'" style="color: green"><Select /></el-icon>
+            <el-icon v-if="scope.row.status=='1'" style="color: green"><Select /></el-icon>
             <el-icon v-else style="color: red"><CloseBold /></el-icon>
           </template>
         </el-table-column>
@@ -66,44 +66,62 @@
 </template>
 
 <script setup>
-import {CloseBold} from "@element-plus/icons-vue";
-import {Select} from "@element-plus/icons-vue";
+import {CloseBold,Select} from "@element-plus/icons-vue";
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {backOfficeMenu} from "@/store/backOfficeMenu.js";
-import {storeToRefs} from "pinia";
+import {getDoctor} from "@/utils/people/getDoctor.js";
+import {getRdvByCenter} from "@/utils/rdv/getRdvByCenter.js";
+import {deleteRdv} from "@/utils/rdv/deleteRdv.js";
+import {deletePerson} from "@/utils/people/deleteDoctor.js";
 
 const router=useRouter();
 const store=backOfficeMenu();
 let {center,person,reservation}=storeToRefs(store);
-console.log(center.value)
-const centerInfo = center.value.name+', '+center.value.address+'; '+center.value.ZIPcode+' '+center.value.city;
+const centerInfo = center.value.name+', '+center.value.address+'; '+center.value.zipcode+' '+center.value.city;
 
-const doctorData = [
-  {id: '1', firstname: 'Tom', lastname: 'Clancy',email:'980819213zzx@gmail.com',password:'1111111111111'},
-  {id: '2', firstname: 'Tom', lastname: 'Clancy',email:'980819213zzx@gmail.com',password:'2222222222222'},
-  {id: '3', firstname: 'Tom', lastname: 'Clancy',email:'980819213zzx@gmail.com',password:'3333333333333'},
-]
-const reserveData = [
-  {id: '1', firstname: 'Tom', lastname: 'Clancy',date:'11/01/2023',hour:'15:40',email:'980819213zzx@gmail.com',sta:'0'},
-  {id: '2', firstname: 'Tom', lastname: 'Clancy',date:'11/01/2023',hour:'16:20',email:'980819213zzx@gmail.com',sta:'1'},
-  {id: '3', firstname: 'Tom', lastname: 'Clancy',date:'11/01/2023',hour:'13:10',email:'980819213zzx@gmail.com',sta:'0'},
-]
-
+let doctorData = ref([])
+let reserveData = ref([])
+getDoctor(center.value.id).then(res=>{
+  doctorData.value=res;
+})
+getRdvByCenter(center.value.id).then(res=>{
+  reserveData.value=res;
+})
 const onAddDoctor = () => {
   person.value={};
-  router.push({name:'PersonModify'});
+  router.push({
+    name:'PersonModify',
+    query:{
+      action:'add'
+    }
+  });
 }
 const onAddReservation = () => {
   reservation.value={};
-  router.push({name:'AdminReserve'});
+  router.push({
+    name:'AdminReserve',
+    query:{
+      action:'add'
+    }
+  });
 }
 const onModify = (row) => {
   if (row.date){
     reservation.value=row;
-    router.push({name:'AdminReserve'});
+    router.push({
+      name:'AdminReserve',
+      query:{
+        action:'modify'
+      }
+    });
   }else {
     person.value=row;
-    router.push({name:'PersonModify'});
+    router.push({
+      name:'PersonModify',
+      query:{
+        action:'modify'
+      }
+    });
   }
 }
 const onDelete = (row) => {
@@ -117,12 +135,25 @@ const onDelete = (row) => {
       }
   )
       .then(() => {
-        //Delete的http请求
-
-        ElMessage({
-          type: 'success',
-          message: 'Suppression terminée',
-        })
+        if (row.date){
+          deleteRdv(row.id).then(res=>{
+            if (res==200){
+              ElMessage({
+                type: 'success',
+                message: 'Suppression terminée',
+              })
+            }
+          })
+        }else {
+          deletePerson(row.id).then(res=>{
+            if (res==200){
+              ElMessage({
+                type: 'success',
+                message: 'Suppression terminée',
+              })
+            }
+          })
+        }
       })
       .catch(() => {
         ElMessage({

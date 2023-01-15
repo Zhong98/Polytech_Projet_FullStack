@@ -10,9 +10,10 @@
         label-width="120px"
         label-position="top"
         size="large"
+        method="post"
     >
       <el-form-item label="Centre">
-        <el-input v-model="form.center" type="textarea" readonly/>
+        <el-input :value="center" type="textarea" readonly/>
       </el-form-item>
       <el-form-item label="Prénom">
         <el-input v-model="form.firstname" />
@@ -26,7 +27,7 @@
       <el-form-item label="Date">
         <el-col :span="11">
           <el-date-picker
-              v-model="form.date1"
+              v-model="form.date"
               type="date"
               placeholder="Choisir une date"
               style="width: 100%"
@@ -37,7 +38,7 @@
         </el-col>
         <el-col :span="11">
           <el-time-picker
-              v-model="form.date2"
+              v-model="form.hour"
               placeholder="Choisir une heure"
               style="width: 100%"
               format="HH:mm"
@@ -45,7 +46,7 @@
         </el-col>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit(form)">Réserver</el-button>
+        <el-button type="primary" @click="onSubmit">Réserver</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -53,38 +54,59 @@
 
 <script setup>
 import { ElMessageBox } from 'element-plus'
-import { SuccessFilled } from '@element-plus/icons-vue'
+import { SuccessFilled,WarningFilled } from '@element-plus/icons-vue'
 import {reservation} from "@/store/reserve.js";
+import {sendRdv} from "@/utils/rdv/sendRdv.js";
 
 const store=reservation(); //Obtenir les données enregistrées dans Pinia
 let {centerSelected}=store;
 
+const center=centerSelected.name+', '+centerSelected.address+'; '+centerSelected.ZIPcode+' '+centerSelected.city;
 const router=useRouter();
 const goBack = () => {
   router.push({name:'PublicIndex'})
 }
 
 const form = reactive({
-  center: centerSelected.name+', '+centerSelected.address+'; '+centerSelected.ZIPcode+' '+centerSelected.city,
   firstname: '',
   lastname:'',
   email:'',
-  date1: '',
-  date2: '',
+  date: '',
+  hour: '',
 })
 
-const onSubmit = (form) => {
-  //notification
-  ElMessageBox.alert(
-      'Votre réservation a bien été prise en compte',
-      {
-        confirmButtonText: 'OK',
-        type: 'success',
-        icon: markRaw(SuccessFilled),
-      }
-  )
-  //Obtenir le temps
-  console.log(form.date1.getMonth()+1,form.date2.getHours(),form.date2.getMinutes())
+const onSubmit = () => {
+  let reservation={
+    centerID:centerSelected.id+'',
+    firstname:form.firstname,
+    lastname:form.lastname,
+    email:form.email,
+    date: form.date.getDate()+'/'+(form.date.getMonth()+1)+'/'+form.date.getFullYear(),
+    hour: form.hour.getHours()+':'+form.hour.getMinutes(),
+    status:0
+  }
+  sendRdv(reservation).then(res=>{
+    if (res==200){
+      ElMessageBox.alert(
+          'Votre réservation a bien été prise en compte',
+          {
+            confirmButtonText: 'OK',
+            type: 'success',
+            icon: markRaw(SuccessFilled),
+          }
+      )
+    }else {
+      ElMessageBox.alert(
+          'Erreur se produit ',
+          {
+            confirmButtonText: 'OK',
+            type: 'error',
+            icon: markRaw(WarningFilled),
+          }
+      )
+    }
+  })
+
 }
 </script>
 
