@@ -23,8 +23,6 @@ public class WebConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration registration=registry.addInterceptor(loginInterceptor);
-        registration.addPathPatterns("/**");
-        registration.excludePathPatterns("/login");
-        registration.excludePathPatterns("/public");
+        registration.addPathPatterns("/admin/**");
     }
 }
